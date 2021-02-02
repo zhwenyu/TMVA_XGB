@@ -36,7 +36,7 @@ DEFAULT_MDEPTH   = "3"#str(len(varList))
 DEFAULT_VARLISTKEY = "NewVar"
 DEFAULT_SIGMASS = "M-3000"
 DEFAULT_INTERACTIVE = True
-note = '_4j_year2017'  # EDIT
+note = '_6j_year2016_NJetsCSV'  # EDIT
 
 shortopts  = "f:n:d:s:l:t:o:i:vh?"
 longopts   = ["inputfile=", "nTrees=", "maxDepth=", "sigMass=", "varListKey=", "inputtrees=", "outputfile=","interactive=", "verbose", "help", "usage"]
@@ -76,7 +76,7 @@ for o, a in opts:
 def getFscore(model):
     fig,ax = plt.subplots()
     bst.get_score(importance_type='gain')
-    xgb.plot_importance(bst, importance_type='gain', ax=ax,  max_num_features = 10, xlabel = 'Gain', ylabel = 'Var', title = 'XGB Training Output')
+    xgb.plot_importance(bst, importance_type='gain', ax=ax,  max_num_features = 40, xlabel = 'Gain', ylabel = 'Var', title = 'XGB Training Output')
     plt.savefig('FScore_'+str(num_round)+'iterations'+"_"+str(param['max_depth'])+'depth_'+str(varListKey)+note+'.png')
 
 def buildROC(target_test,test_preds):
@@ -93,21 +93,23 @@ def buildROC(target_test,test_preds):
     plt.xlabel('False Positive Rate')
     plt.gcf().savefig('ROC_'+str(num_round)+'iterations'+"_"+str(param['max_depth'])+'depth_'+str(varListKey)+note+'.png')
 
-selList = [["isTraining", ""], ["isElectron", ""], ["isMuon", ""],["DataPastTriggerX",""],["MCPastTriggerX"], ["minDR_lepJet", ""], ["leptonPt_MultiLepCalc"], ["NJets_JetSubCalc"], ["NJetsCSVwithSF_MultiLepCalc"], ["corr_met_MultiLepCalc"], ["MT_lepMet"], ["AK4HT"]]
+selList = [["isTraining", ""], ["isElectron", ""], ["isMuon", ""],["DataPastTriggerX",""],["MCPastTriggerX"], ["minDR_lepJet", ""], ["leptonPt_MultiLepCalc"], ["NJets_JetSubCalc"], ["NJetsCSV_MultiLepCalc"], ["corr_met_MultiLepCalc"], ["MT_lepMet"], ["AK4HT"]]
+## NOTE selList NJetsCSVwithSF # EDIT
 weightList = [["pileupWeight", ""], ["lepIdSF", ""], ["EGammaGsfSF", ""], ["MCWeight_MultiLepCalc", ""], ["triggerXSF", ""], ["isoSF", ""], ["L1NonPrefiringProb_CommonCalc", ""], ["tthfWeight", ""], ["btagCSVWeight"], ["btagCSVRenormWeight"]] 
 varList = varsList.varList[varListKey]
 inputList = list(set(iVar[0] for iVar in varList+selList+weightList))
 
 inputDir = varsList.inputDir
 #infname = "TTTT_TuneCP5_13TeV-amcatnlo-pythia8_hadd.root" # 2018 # EDIT
-infname = "TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8_hadd.root" # 2017
+#infname = "TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8_hadd.root" # 2017
+infname = "TTTT_TuneCP5_PSweights_13TeV-amcatnlo-pythia8_correctnPartonsInBorn_hadd.root" # 2016
 print "Loading Signal Sample"
 sig_tree = uproot.open(inputDir+infname)["ljmet"]
 sig_df = sig_tree.pandas.df(branches= inputList)
 
 #Event Selection
 print(sig_df[sig_df.index.duplicated()]) 
-sig_selected = (sig_df["isTraining"]<3)&(sig_df["NJets_JetSubCalc"]>=4)&(sig_df["NJetsCSVwithSF_MultiLepCalc"]>=2)&( ((sig_df["leptonPt_MultiLepCalc"]>20)&(sig_df["isElectron"]==True))|((sig_df["leptonPt_MultiLepCalc"]>20)&(sig_df["isMuon"]==True)))&(sig_df["MCPastTriggerX"]==1)&(sig_df["DataPastTriggerX"]==1)&(sig_df["corr_met_MultiLepCalc"]>60)&(sig_df["MT_lepMet"]>60)&(sig_df["minDR_lepJet"] > 0.4)&(sig_df["AK4HT"] > 500)
+sig_selected = (sig_df["isTraining"]<3)&(sig_df["NJets_JetSubCalc"]>=6)&(sig_df["NJetsCSV_MultiLepCalc"]>=2)&( ((sig_df["leptonPt_MultiLepCalc"]>20)&(sig_df["isElectron"]==True))|((sig_df["leptonPt_MultiLepCalc"]>20)&(sig_df["isMuon"]==True)))&(sig_df["MCPastTriggerX"]==1)&(sig_df["DataPastTriggerX"]==1)&(sig_df["corr_met_MultiLepCalc"]>60)&(sig_df["MT_lepMet"]>60)&(sig_df["minDR_lepJet"] > 0.4)&(sig_df["AK4HT"] > 500)
 sig_df = sig_df[sig_selected]
 
 print "Loading Background Samples"
@@ -120,7 +122,7 @@ for ibkg in bkgList:
     bkg_tree = uproot.open(inputDir+ibkg)["ljmet"]
     bkg_df = bkg_tree.pandas.df(branches= inputList)
     print bkg_df
-    bkg_selected = (bkg_df["isTraining"]<3)&(bkg_df["NJets_JetSubCalc"]>=4)&(bkg_df["NJetsCSVwithSF_MultiLepCalc"]>=2)&( ((bkg_df["leptonPt_MultiLepCalc"]>20)&(bkg_df["isElectron"]==True))|((bkg_df["leptonPt_MultiLepCalc"]>20)&(bkg_df["isMuon"]==True)))&(bkg_df["MCPastTriggerX"]==1)&(bkg_df["DataPastTriggerX"]==1)&(bkg_df["corr_met_MultiLepCalc"]>60)&(bkg_df["MT_lepMet"]>60)&(bkg_df["minDR_lepJet"] > 0.4)&(bkg_df["AK4HT"] > 500)
+    bkg_selected = (bkg_df["isTraining"]<3)&(bkg_df["NJets_JetSubCalc"]>=6)&(bkg_df["NJetsCSV_MultiLepCalc"]>=2)&( ((bkg_df["leptonPt_MultiLepCalc"]>20)&(bkg_df["isElectron"]==True))|((bkg_df["leptonPt_MultiLepCalc"]>20)&(bkg_df["isMuon"]==True)))&(bkg_df["MCPastTriggerX"]==1)&(bkg_df["DataPastTriggerX"]==1)&(bkg_df["corr_met_MultiLepCalc"]>60)&(bkg_df["MT_lepMet"]>60)&(bkg_df["minDR_lepJet"] > 0.4)&(bkg_df["AK4HT"] > 500)
     bkg_df = bkg_df[bkg_selected]
     print bkg_df
     back_dfs.append(bkg_df)
