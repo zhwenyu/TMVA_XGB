@@ -20,6 +20,9 @@ import sklearn
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
+print "uproot", uproot.__version__
+print "xgb ", xgb.__version__
+print(sys.version) 
 ############################################################
 # Copy the entire step-2 TTree, add XGB, save to a new TTree
 ############################################################
@@ -145,7 +148,7 @@ iev=0
 
 print "Compute XGB"
 
-for chunk in sig_tree.iterate("*", entrysteps=10000, namedecode="utf-8"):
+for chunk in sig_tree.iterate("*", entrysteps=5000, namedecode="utf-8"): # 10000 -wz
     array_var=[]
     for var in train_var:
         array_var.append(chunk[var])

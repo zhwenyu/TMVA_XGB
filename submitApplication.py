@@ -10,10 +10,10 @@ shift = sys.argv[1]
 runDir = os.getcwd()
 start_time = time.time()
 
-modelFile = 'XGB500iterations_3depths_signal_region_SepRank6j73vars2017year40top_4j_year2017'
-inputDir='/mnt/hadoop/store/group/bruxljm/FWLJMET102X_1lep2017_Oct2019_4t_10072020_step2/'+ shift + '/'
-outputDir= '/mnt/hadoop/store/group/bruxljm/FWLJMET102X_1lep2017_Oct2019_4t_12092020_step3XGB_wenyu/'+ modelFile +'/'+ shift + '/' # or 2018
-condorDir= runDir+'/condor_logs/FWLJMET102X_1lep2017_Oct2019_4t_12092020_step3XGB_wenyu/' + modelFile +'/'+ shift + '/' 
+modelFile = 'XGB500iterations_3depths_signal_region_SepRank6j73vars2017year40top_6j_year2018_NJetsCSV'
+inputDir='/mnt/hadoop/store/group/bruxljm/FWLJMET102X_1lep2018_Oct2019_4t_01212021_step2/'+ shift + '/'
+outputDir= '/mnt/hadoop/store/group/bruxljm/FWLJMET102X_1lep2018_Oct2019_4t_01272021_step3_wenyu/'+ modelFile +'/'+ shift + '/' # or 2018
+condorDir= runDir+'/condor_logs/FWLJMET102X_1lep2018_Oct2019_4t_01272021_step3_wenyu/' + modelFile +'/'+ shift + '/' 
 vListKey = modelFile.split('_')[4]
 
 print 'Starting submission'
@@ -52,6 +52,7 @@ Transfer_Input_Files = %(RUNDIR)s/XGBApply.py, %(RUNDIR)s/varsList.py
 Output = %(FILENAME)s.out
 Error = %(FILENAME)s.err
 Log = %(FILENAME)s.log
+JobBatchName = xgb_step3
 Notification = Never
 Arguments =  %(INPUTDIR)s/%(FILENAME)s.root  %(OUTPUTDIR)s  %(FILENAME)s.root  %(VLIST)s %(MODEL)s.model 
 Queue 1"""%dict)
